@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include <unordered_set>
 
 std::vector<std::string> print_passphrase(std::string passphrase)
@@ -15,8 +16,10 @@ std::vector<std::string> print_passphrase(std::string passphrase)
 		str >> tstr;
 		if (!str)
 			break;
-		else
+		else {
+			std::sort(tstr.begin(), tstr.end());
 			vec_str.push_back(tstr);
+		}
 	}
 	return vec_str;
 }
@@ -25,9 +28,10 @@ int duplicate_word(std::vector<std::string> vec_str)
 {
 	std::unordered_set<std::string> set_str;	
 	for (int i = 0; i < vec_str.size(); i++) {
-		if (set_str.find(vec_str[i]) != set_str.end())
+		if (set_str.find(vec_str[i]) != set_str.end()) {
+			std::cout << vec_str[i] << std::endl;
 			return 0;
-		else
+		} else
 			set_str.insert(vec_str[i]);
 	}
 	return 1;
@@ -48,7 +52,7 @@ int main(int argc, char **argv)
 			valid_phrase += duplicate_word(vec_str);
 #else
 			// part 2 -- w.i.p.
-			// valid_phrase += anagram_word(vec_str);
+			valid_phrase += duplicate_word(vec_str);
 #endif
 		}
 	} else {
