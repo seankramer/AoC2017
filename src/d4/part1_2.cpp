@@ -17,7 +17,11 @@ std::vector<std::string> print_passphrase(std::string passphrase)
 		if (!str)
 			break;
 		else {
+#define PART2
+#ifdef PART2
+			// part 2 -- complete
 			std::sort(tstr.begin(), tstr.end());
+#endif
 			vec_str.push_back(tstr);
 		}
 	}
@@ -26,12 +30,11 @@ std::vector<std::string> print_passphrase(std::string passphrase)
 
 int duplicate_word(std::vector<std::string> vec_str)
 {
-	std::unordered_set<std::string> set_str;	
+	std::unordered_set<std::string> set_str;
 	for (int i = 0; i < vec_str.size(); i++) {
-		if (set_str.find(vec_str[i]) != set_str.end()) {
-			std::cout << vec_str[i] << std::endl;
+		if (set_str.find(vec_str[i]) != set_str.end())
 			return 0;
-		} else
+		else
 			set_str.insert(vec_str[i]);
 	}
 	return 1;
@@ -47,13 +50,7 @@ int main(int argc, char **argv)
 	if (input_file.is_open()) {
 		while(getline(input_file, passphrase)) {
 			vec_str = print_passphrase(passphrase);
-#ifdef PART1
-			// part 1 -- complete
 			valid_phrase += duplicate_word(vec_str);
-#else
-			// part 2 -- w.i.p.
-			valid_phrase += duplicate_word(vec_str);
-#endif
 		}
 	} else {
 		std::cout << "error: file not opened" << std::endl;
