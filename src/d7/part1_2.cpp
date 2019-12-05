@@ -14,7 +14,19 @@ struct Node
 	int lvl_weight;
 	std::string name;
 	std::vector<std::string> vec_chld;
+	int chld_sz;
 };
+
+Node *find_parent(std::vector<Node*> vec_node, std::string cname)
+{
+	for (auto& nd : vec_node) {
+		for (auto str : nd->vec_chld) {
+			if (str.compare(cname) == 0)
+				return nd;
+		}
+	}
+	return nullptr;
+}
 
 #ifdef DEBUG
 void print_node(Node *node)
@@ -23,18 +35,6 @@ void print_node(Node *node)
 	for (auto str : node->vec_chld)
 		std::cout << "    " << str << std::endl;
 	std::cout << std::endl << std::endl;
-}
-
-// void print_vectors(std::vector<Node*> cnode, std::vector<Node*> pnode)
-void print_vectors(std::vector<Node*> pnode)
-{
-	// for (auto& c : cnode)
-	// 	std::cout << c->name << std::endl;
-	// std::cout << std::endl;
-
-	for (auto& p : pnode)
-		std::cout << p->name  << " " << p->weight << std::endl;
-	std::cout << std::endl;
 }
 
 void print_parent_vector(std::vector<Node*> pnode)
@@ -46,7 +46,42 @@ void print_parent_vector(std::vector<Node*> pnode)
 		std::cout << std::endl;
 	}
 }
+
+void print_child_vector(std::vector<Node*> vec_node, std::vector<Node*> cnode)
+{
+	int ndwt = 0, pwt = 0;
+	for (auto& nd : cnode) {
+		std::string pname = nd->name;
+		if (ndwt == 0) {
+			ndwt = nd->weight;
+		} else {
+			pwt = ndwt;
+			ndwt = nd->weight;
+		// 	if (ndwt - pwt == 0) {
+				Node *pd = find_parent(vec_node, nd->name);
+				std::cout << pd->name << " (" << pd->weight  << ")  -->  ";
+				std::cout << nd->name << " (" << nd->weight  << ") ";
+				std::cout << nd->chld_sz << "          ";
+				std::cout << (ndwt - pwt) << std::endl;
+		// 	}
+		}
+	}
+}
 #endif
+
+bool sort_by_weight(Node *n0, Node *n1)
+{
+	// return ((*n0).chld_sz < (*n1).chld_sz);
+	return ((*n0).weight < (*n1).weight);
+}
+
+bool node_seen_before(std::vector<Node*> vec_hpnode, std::string hpname)
+{
+	for (auto& nd : vec_hpnode)
+		if (hpname.compare(nd->name) == 0)
+			return true;
+	return false;
+}
 
 std::pair<Node*, int> link_nodes(std::vector<Node*> vec_cnode, std::string cname)
 {
@@ -67,6 +102,7 @@ void get_attrib(std::string node_str, Node *node)
 	std::stringstream ss(node_str.substr(st_paren, end_paren - st_paren));
 	ss >> node->weight;
 	node->lvl_weight = 0;
+	node->chld_sz = 0;
 	node->name = node_str.substr(0, node_str.find(' '));
 }
 
@@ -105,10 +141,11 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+#ifdef PART1
 	while (!pnode.empty()) {
 		Node *node = pnode.front();
 		std::pair<Node*, int> cnode_pair;
-		std::cout << node->name << " (" << node->weight  << ")" << std::endl;
+		// std::cout << node->name << " (" << node->weight  << ")" << std::endl;
 
 		while (!node->vec_chld.empty()) {
 			std::string chld = node->vec_chld.front();
@@ -123,13 +160,13 @@ int main(int argc, char **argv)
 				// 	std::cout << cnode_pair.first->weight << std::endl;
 				// }
 				node->weight += cnode_pair.first->weight;
-				std::cout << "    " << cnode_pair.first->name << " (";
-				std::cout << cnode_pair.first->weight << ")" << std::endl;
+				// std::cout << "    " << cnode_pair.first->name << " (";
+				// std::cout << cnode_pair.first->weight << ")" << std::endl;
 				cnode.erase(cnode.begin() + cnode_pair.second);
 				node->vec_chld.erase(node->vec_chld.begin());
 			} else {
 				pnode.push_back(node);
-				std::cout << "    child node not found" << std::endl;
+				// std::cout << "    child node not found" << std::endl;
 				break;
 			}
 		}
@@ -140,6 +177,48 @@ int main(int argc, char **argv)
 			std::cout << "king node: " << node->name << std::endl;
 		pnode.erase(pnode.begin());
 	}
+#else
+	std::sort(pnode.begin(), pnode.end(), sort_by_weight);
+	print_parent_vector(pnode);
+
+	// std::vector<Node*> higher_parent;
+	// while (!pnode.empty()) {
+	// 	Node *node = pnode.front();
+	// 	std::pair<Node*, int> cnode_pair;
+	// 	// std::cout << node->name << " (" << node->weight  << ")" << std::endl;
+
+	// 	if (node_seen_before(higher_parent, node->name)) {
+	// 		std::cout << std::endl << "breaking..." << std::endl;
+	// 		// std::sort(pnode.begin(), pnode.end(), sort_by_weight);
+	// 		print_child_vector(higher_parent, cnode);
+	// 		// std::sort(higher_parent.begin(), higher_parent.end(), sort_by_weight);
+	// 		// print_child_vector(higher_parent);
+	// 		higher_parent.clear();
+	// 		// break;
+	// 	}
+
+	// 	while (!node->vec_chld.empty()) {
+	// 		std::string chld = node->vec_chld.front();
+	// 		cnode_pair = link_nodes(cnode, chld);
+
+	// 		if (cnode_pair.first != nullptr) {
+	// 			node->chld_sz++;
+	// 			node->weight += cnode_pair.first->weight;
+	// 			// std::cout << "    " << cnode_pair.first->name << " (";
+	// 			// std::cout << cnode_pair.first->weight << ")" << std::endl;
+	// 			cnode.erase(cnode.begin() + cnode_pair.second);
+	// 			node->vec_chld.erase(node->vec_chld.begin());
+	// 		} else {
+	// 			higher_parent.push_back(node);
+	// 			pnode.push_back(node);
+	// 			break;
+	// 		}
+	// 	}
+	// 	if (node->vec_chld.empty())
+	// 		cnode.push_back(node);
+	// 	pnode.erase(pnode.begin());
+	// }
+#endif
 
 	input_file.close();
 	return 0;
