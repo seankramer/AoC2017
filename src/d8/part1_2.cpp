@@ -1,39 +1,49 @@
-#include <map>
-#include <vector>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <functional>
+#include <unordered_map>
 
-#if 0
-std::map<std::string, std::function<bool(int, int)> > cmp_map =
-{
-    {"==", std::equal_to<int>()},
-    {"!=", std::not_equal_to<int>()},
-    {">", std::greater<int>()},
-    {">=", std::greater_equal<int>()},
-    {"<", std::less<int>()},
-    {"<=", std::less_equal<int>()}
-};
-#endif
+std::unordered_map<std::string, std::function<bool(int, int)>> const cmpr
+{{
+	{"==", std::equal_to<void>()},
+	{"!=", std::not_equal_to<void>()},
+	{"<=", std::less_equal<void>()},
+	{"<", std::less<void>()},
+	{">=", std::greater_equal<void>()},
+	{">", std::greater<void>()}
+}};
 
 int main(int argc, char **argv)
 {
-	std::string in_str;
 	std::ifstream input_file(argv[1]);
-
-    int op_val, cmp_val, max_val = 0;
-    std::string reg, op, chreg, cmp;
-    std::map<std::string, int> reg_data;
-
-	if (input_file.is_open()) {
-		while(getline(input_file, in_str)) {
-            std::stringstream ss(in_str);
-            ss >> reg >> op >> op_val;
-		}
-	} else {
+	if (!input_file.is_open()) {
 		std::cout << "error: cannot open file" << std::endl;
 		exit(1);
 	}
+
+	std::string in_str;
+	int op_val, cmp_val;
+	std::string reg, op, cmp_reg, cmp;
+	std::unordered_map<std::string, int> reg_data;
+
+	while(getline(input_file, in_str)) {
+		std::stringstream ss(in_str);
+		ss >> reg >> op >> op_val >> cmp_reg >> cmp_reg >> cmp >> cmp_val;
+		op_val = (op == "dec") ? op_val * -1 : op_val;
+		if (cmpr.at(cmp)(reg_data[cmp_reg], cmp_val))
+			reg_data[reg] += op_val;
+	}
+
+#ifdef PART1
+	int mx = 0;
+	std::unordered_map<std::string, int>::iterator it = reg_data.begin();
+	while (it != reg_data.end()) {
+		mx = (it->second > mx) ? it->second : mx;
+		it++;
+	}
+	std::cout << mx << std::endl;
+#endif
+
 	return 0;
 }
