@@ -11,9 +11,10 @@ int main(int argc, char **argv)
 
 	std::string line;
 	bool gflg = false;
-	int sz = 0, cmplnest = 0, nest = 0;
+	int sz = 0, cmplnest = 0, nest = 0, gchar = 0;
 	std::getline(input_file, line);
 	while (sz <= line.size()) {
+		if (gflg) gchar++;
 		switch (line[sz]) {
 			case '{':
 				if (gflg) {
@@ -32,12 +33,14 @@ int main(int argc, char **argv)
 					break;
 				}
 			case '<':
+				if (!gflg) gchar--;
 				gflg = true;
 				break;
 			case '>':
 				gflg = false;
 				break;
 			case '!':
+				if (gflg) gchar--;
 				sz++;
 				break;
 			default:
@@ -46,5 +49,6 @@ int main(int argc, char **argv)
 		sz++;
 	}
 	std::cout << "complete nests: " << cmplnest << std::endl;
+	std::cout << "garbage characters: " << gchar << std::endl;
 	return 0;
 }
