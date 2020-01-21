@@ -3,14 +3,21 @@
 
 using namespace std;
 
+// #define PART1
 #define ACCESS_PORT 1
 #define START_NUM   312051
 
-// #define PART1
-#ifdef PART1
+
 struct Coords
 {
-    int row, col;
+    int row;
+    int col;
+};
+
+struct adj_data
+{
+    int blocks;
+    int sum;
 };
 
 int **make_spiral(int n)
@@ -45,13 +52,6 @@ void find_matrix_coords(Coords& pos, int **matrix, int msz, int pval)
         }
     }
 }
-#else
-
-struct adj_data
-{
-    int blocks;
-    int sum;
-};
 
 void find_adjacent_vals(adj_data& ajd, int **matrix, int r, int c, int msz)
 {
@@ -78,7 +78,6 @@ void find_adjacent_vals(adj_data& ajd, int **matrix, int r, int c, int msz)
     }
     ajd.blocks = adj_blocks;
     ajd.sum = adj_sum;
-    // cout << "adj_blocks : " << adj_blocks << endl;
     cout << "adj_sum : " << adj_sum << endl;
 }
 
@@ -173,15 +172,8 @@ int main(int argc, char **argv)
 
 #ifdef PART1
     // part 1 -- complete
-    int **matrix = make_spiral(matrix_sz);
-    // for (int i = 0; i < matrix_sz; i++) {
-    //     for (int j = 0; j < matrix_sz; j++) {
-    //         cout << matrix[i][j] << "\t";
-    //     }
-    //     cout << endl;
-    // }
-
     Coords center, start_pos;
+    int **matrix = make_spiral(matrix_sz);
     find_matrix_coords(center, matrix, matrix_sz, ACCESS_PORT);
     find_matrix_coords(start_pos, matrix, matrix_sz, START_NUM);
 
@@ -192,14 +184,6 @@ int main(int argc, char **argv)
     // part 2 -- complete
     int **matrix = blank_spiral(matrix_sz);
     populate_fib_matrix(matrix, matrix_sz);
-
-    // print out matrix test
-    // for (int i = 0; i < matrix_sz; i++) {
-    //     for (int j = 0; j < matrix_sz; j++) {
-    //         cout << matrix[i][j] << "\t";
-    //     }
-    //     cout << endl;
-    // }
 #endif
 
     return 0;
