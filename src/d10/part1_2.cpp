@@ -4,7 +4,6 @@
 #include <sstream>
 #include <iostream>
 
-// #define EXAMPLE
 #define TEST_LEN 5
 #define MAX_LEN 256
 
@@ -32,6 +31,7 @@ int main(int argc, char **argv)
 	int ndx = 0, ldex, hdex;;
 	std::vector<int> vec_rev;
 
+// #define EXAMPLE
 #ifdef EXAMPLE
 	std::vector<int> n_seq(TEST_LEN);
 #else
