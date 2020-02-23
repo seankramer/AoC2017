@@ -5,14 +5,16 @@
 #include <unordered_map>
 
 std::unordered_map<std::string, std::function<bool(int, int)>> const cmpr
-{{
-	{"==", std::equal_to<void>()},
-	{"!=", std::not_equal_to<void>()},
-	{"<=", std::less_equal<void>()},
-	{"<", std::less<void>()},
-	{">=", std::greater_equal<void>()},
-	{">", std::greater<void>()}
-}};
+{
+	{
+		{"==", std::equal_to<void>()},
+		{"!=", std::not_equal_to<void>()},
+		{"<=", std::less_equal<void>()},
+		{"<", std::less<void>()},
+		{">=", std::greater_equal<void>()},
+		{">", std::greater<void>()}
+	}
+};
 
 int main(int argc, char **argv)
 {
